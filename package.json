@@ -1,0 +1,30 @@
+{
+  "name": "@cpnv/vir1-core",
+  "version": "1.0.0",
+  "description": "A repository that provides AWS,JSON and log files helpers used in VIR1",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thynkon/VIR1-CORE.git"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1131.0",
+    "log4js": "^6.4.6"
+  },
+  "devDependencies": {
+    "jest": "^28.1.0"
+  },
+  "keywords": [
+    "aws",
+    "cloud"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Thynkon/VIR1-CORE/issues"
+  },
+  "homepage": "https://github.com/Thynkon/VIR1-CORE#readme"
+}
