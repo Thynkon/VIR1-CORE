@@ -1,5 +1,5 @@
 {
-  "name": "@cpnv/vir1-core",
+  "name": "vir1-core",
   "version": "1.0.0",
   "description": "A repository that provides AWS,JSON and log files helpers used in VIR1",
   "main": "index.js",

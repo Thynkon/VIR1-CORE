@@ -1,3 +1,3 @@
-const Logger = require('src/FileLogger.js');
+const Logger = require('./src/FileLogger.js');
 
-module.exports.Logger = Logger;
+exports.Logger = Logger;
