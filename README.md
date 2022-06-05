@@ -37,8 +37,6 @@
     <a href="./doc"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Thynkon/VIR1-CORE">View Demo</a>
-    ·
     <a href="https://github.com/Thynkon/VIR1-CORE/issues">Report Bug</a>
     ·
     <a href="https://github.com/Thynkon/VIR1-CORE/issues">Request Feature</a>
@@ -108,7 +106,7 @@ Before you clone this repository, [setup your AWS credentials](https://docs.aws.
 
 2. Install npm dependencies
     ```sh
-    npm install
+    npm install --dev
     ```
 ## Hacking on the project
 ### Tests
