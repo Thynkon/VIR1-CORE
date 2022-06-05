@@ -1,6 +1,7 @@
 const log4js = require('log4js');
 
-module.exports = class FileLogger {
+/** Class that stores log messages in files */
+class Logger {
     static #_logger;
 
     /**
@@ -8,7 +9,7 @@ module.exports = class FileLogger {
      * @see https://log4js-node.github.io/log4js-node/index.html
      */
     static get #logger() {
-        if (!FileLogger.#_logger) {
+        if (!Logger.#_logger) {
             log4js.configure({
                 appenders: {
                     default: {
@@ -22,17 +23,27 @@ module.exports = class FileLogger {
                 categories: { default: { appenders: ['default'], level: 'ALL' } },
             });
 
-            FileLogger.#_logger = log4js.getLogger();
+            Logger.#_logger = log4js.getLogger();
         }
 
-        return FileLogger.#_logger;
+        return Logger.#_logger;
     }
 
+    /**
+     * Store an info level log
+     * @param {string} message - The message to be logged
+     */
     static info(message) {
-        FileLogger.#logger.info(message);
+        Logger.#logger.info(message);
     }
 
+    /**
+     * Store an error level log
+     * @param {string} message - The message to be logged
+     */
     static error(message) {
-        FileLogger.#logger.error(message);
+        Logger.#logger.error(message);
     }
 }
+
+module.exports = { Logger };
