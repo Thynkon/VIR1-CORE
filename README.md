@@ -129,6 +129,13 @@ You can find under the **doc** directory, diagrams related to the classes used i
 Also, there is a [wiki section](https://github.com/Thynkon/VIR1-CORE/wiki) that explains pretty much everything you need to understand about
 this repository.
 
+If you want to look at the api documentation, you can generate it on your machine by typing the following:
+```sh
+npm run doc
+```
+
+The documentation will be generated in the **doc/api** folder.
+
 <!-- CONTRIBUTING -->
 ## Contributing
 
