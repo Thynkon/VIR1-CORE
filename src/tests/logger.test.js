@@ -1,7 +1,7 @@
-const Logger = require("../FileLogger");
+const { Logger } = require("../Logger");
 const fs = require("fs");
 
-describe('FileLogger', () => {
+describe('Logger', () => {
     test('info_LogInInfoLogFile_Success', async () => {
         // Given
         const message = 'Test info message';
