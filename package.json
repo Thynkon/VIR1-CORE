@@ -4,7 +4,8 @@
   "description": "A repository that provides AWS,JSON and log files helpers used in VIR1",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "doc": "./node_modules/.bin/jsdoc src -d doc/api"
   },
   "repository": {
     "type": "git",
@@ -15,7 +16,8 @@
     "log4js": "^6.4.6"
   },
   "devDependencies": {
-    "jest": "^28.1.0"
+    "jest": "^28.1.0",
+    "jsdoc": "^3.6.10"
   },
   "keywords": [
     "aws",
