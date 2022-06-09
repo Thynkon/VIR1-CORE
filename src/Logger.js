@@ -3,46 +3,63 @@ const log4js = require('log4js');
 /** Class that stores log messages in files */
 class Logger {
     static #_logger;
+    static ERROR = 0;
+    static INFO = 1;
+
+    /**
+     * Setup the default log appender
+     * @param {string} path - The path of the log file
+     */
+    static #setupLogger(path = "logs") {
+        log4js.configure({
+            appenders: {
+                default: {
+                    type: 'multiFile',
+                    base: path,
+                    property: 'level',
+                    extension: '.log',
+                    layout: { type: 'pattern', pattern: '[%d] [%p] - %m' },
+                },
+            },
+            categories: { default: { appenders: ['default'], level: 'ALL' } },
+        });
+    }
 
     /**
      * @returns {Logger}
      * @see https://log4js-node.github.io/log4js-node/index.html
      */
     static get #logger() {
-        if (!Logger.#_logger) {
-            log4js.configure({
-                appenders: {
-                    default: {
-                        type: 'multiFile',
-                        base: 'logs/',
-                        property: 'level',
-                        extension: '.log',
-                        layout: { type: 'pattern', pattern: '[%d] [%p] - %m' },
-                    },
-                },
-                categories: { default: { appenders: ['default'], level: 'ALL' } },
-            });
-
-            Logger.#_logger = log4js.getLogger();
+        if (!this.#_logger) {
+            this.#setupLogger();
+            this.#_logger = log4js.getLogger();
         }
 
-        return Logger.#_logger;
+        return this.#_logger;
     }
 
     /**
      * Store an info level log
      * @param {string} message - The message to be logged
+     * @param {string} path - The path of the log file
      */
-    static info(message) {
-        Logger.#logger.info(message);
+    static info(message, path) {
+        if (path) {
+            this.#setupLogger(path);
+        }
+        this.#logger.info(message);
     }
 
     /**
      * Store an error level log
      * @param {string} message - The message to be logged
+     * @param {string} path - The path of the log file
      */
-    static error(message) {
-        Logger.#logger.error(message);
+    static error(message, path) {
+        if (path) {
+            this.#setupLogger(path);
+        }
+        this.#logger.error(message);
     }
 }
 
