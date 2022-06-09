@@ -1,5 +1,5 @@
 const { Logger } = require("../Logger");
-const fs = require("fs");
+const { waitForFileToBeWritten, getLastLine } = require('../lib/file');
 
 describe('Logger', () => {
     test('info_LogInInfoLogFile_Success', async () => {
@@ -30,11 +30,3 @@ describe('Logger', () => {
         expect(getLastLine(errorLogFile)).toContain(expectedLogLine);
     });
 });
-
-async function waitForFileToBeWritten() {
-    await new Promise(resolve => setTimeout(resolve, 100));
-}
-
-function getLastLine(filePath) {
-    return fs.readFileSync(filePath, "utf8").trim().split("\n").pop();
-}
