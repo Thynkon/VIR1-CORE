@@ -2,8 +2,26 @@ const log4js = require('log4js');
 
 /** Class that stores log messages in files */
 class Logger {
+    /**
+     * The logger instance.
+     * @type {Logger}
+     * @private
+     * @static
+     */
     static #_logger;
+    /**
+     * Error message type
+     * @type {integer}
+     * @public
+     * @static
+     */
     static ERROR = 0;
+    /**
+     * Info message type
+     * @type {integer}
+     * @private
+     * @public
+     */
     static INFO = 1;
 
     /**
