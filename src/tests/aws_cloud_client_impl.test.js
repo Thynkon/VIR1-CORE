@@ -66,4 +66,64 @@ describe('AwsCloudClientImpl', () => {
         // Then
         // Exception is thrown
     });
+
+    test("exists_ExistingVpc_True", async () => {
+        // Given
+        const givenVpcName = "vpc-deliver";
+        const expectedResult = true;
+        const logDirectory = 'logs';
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.VPC , givenVpcName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
+
+    test("exists_NonExistingVpc_False", async () => {
+        // Given
+        const givenVpcName = "vpc-name-which-does-not-exist";
+        const expectedResult = false;
+        const logDirectory = 'logs';
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.VPC , givenVpcName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
+
+    test("exists_ExistingInstance_Success", async () => {
+        // Given
+        const givenInstanceName = "debian";
+        const expectedResult = true;
+        const logDirectory = 'logs';
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.INSTANCE , givenInstanceName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
+
+    test("exists_NonExistingInstance_Success", async () => {
+        // Given
+        const givenInstanceName = "non-existing-instance";
+        const expectedResult = false;
+        const logDirectory = 'logs';
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.INSTANCE , givenInstanceName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
 });

@@ -14,6 +14,8 @@ const REGION_NOT_FOUND = 'UnknownEndpoint';
  * const client = await AwsCloudClientImpl.initialize('eu-west-3', 'logs');
 */
 class AwsCloudClientImpl extends ICloudClient {
+    static VPC = 0;
+    static INSTANCE = 1;
     /**
      * The connection to the AWS servers that will be used to manipulate the infrastructure.
      * @type {AWS.EC2}
@@ -124,6 +126,74 @@ class AwsCloudClientImpl extends ICloudClient {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Check if region exists
+     * @async
+     * @param {integerk} type - The type of resource to check its existence.
+     * @param {string} name - The name of the resource to check its existence
+     * @param {string} vpcName - The vpc name required by the cost team.
+     * @returns {Promise<boolean>} The region status.
+     */
+    async exists(type, name, vpcName) {
+        let result;
+
+        switch (type) {
+            case AwsCloudClientImpl.VPC:
+                result = await this.#vpcExists(name);
+                break;
+
+            case AwsCloudClientImpl.INSTANCE:
+                result = await this.#instanceExists(name);
+                break;
+
+            default:
+                break;
+        }
+
+        return result;
+    }
+
+    /**
+     * Check if the given name exists from the AWS EC2 SDK
+     * @param name {string} name of a VPC
+     * @returns {Promise<boolean>} true if the VPC exists, false otherwise
+     * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcs-property
+     */
+    async #vpcExists(name) {
+        const handleError = (err) => {
+            throw err;
+        };
+
+        const result = await this.connection
+            .describeVpcs({ Filters: [{ Name: "tag:Name", Values: [name] }] })
+            .promise()
+            .catch(handleError);
+
+        return result.Vpcs.length !== 0;
+    }
+
+    /**
+     * Check if the given name exists from the AWS EC2 SDK
+     * @param name {string} name of an Instance
+     * @returns {boolean} true if the Instance exists, false otherwise
+     * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
+     */
+    async #instanceExists(name) {
+        // function always return empty array even if instance does not exist
+        const handleError = (err) => {
+            throw err;
+        };
+
+        const result = await this.connection
+            .describeInstances({
+                Filters: [{ Name: "tag:Name", Values: [name] }],
+            })
+            .promise()
+            .catch(handleError);
+
+        return result.Reservations.length !== 0;
     }
 }
 
