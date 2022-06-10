@@ -4,7 +4,15 @@ const { Logger } = require('./Logger');
 const { RegionNotFoundException } = require('./exceptions/RegionNotFoundException');
 const REGION_NOT_FOUND = 'UnknownEndpoint';
 
-/** Class that connects to the AWS servers, checks if a resource exists and logs all actions. */
+/**
+ * Class that connects to the AWS servers, checks if a resource exists and logs all actions.
+ * You should not directly call the constructor because we first check if the provided region exists.
+ * To do so, we make an async request. And, in javascript, async constructors can be kind of tricky to implement.
+ * For this reason, we should call a method called `initialize` that will check if the region exists and return an AwsCloudClientImpl instance.
+ *
+ * @example
+ * const client = await AwsCloudClientImpl.initialize('eu-west-3', 'logs');
+*/
 class AwsCloudClientImpl extends ICloudClient {
     /**
      * The connection to the AWS servers that will be used to manipulate the infrastructure.
