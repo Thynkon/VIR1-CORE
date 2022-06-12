@@ -1,3 +1,5 @@
+"use strict";
+
 const log4js = require('log4js');
 
 /** Class that stores log messages in files */
@@ -28,7 +30,7 @@ class Logger {
      * Setup the default log appender
      * @param {string} path - The path of the log file
      */
-    static #setupLogger(path = "logs") {
+    static #setupLogger(path = 'logs') {
         log4js.configure({
             appenders: {
                 default: {

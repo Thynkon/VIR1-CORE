@@ -1,4 +1,6 @@
-const { Logger } = require("../Logger");
+"use strict";
+
+const { Logger } = require('../Logger');
 const { waitForFileToBeWritten, getLastLine } = require('../lib/file');
 
 describe('Logger', () => {

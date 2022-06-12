@@ -1,4 +1,6 @@
-const { AwsCloudClientImpl } = require("../AwsCloudClientImpl");
+"use strict";
+
+const { AwsCloudClientImpl } = require('../AwsCloudClientImpl');
 const { Logger } = require('../Logger');
 const AWS = require('aws-sdk');
 const { waitForFileToBeWritten, getLastLine } = require('../lib/file');
@@ -69,7 +71,7 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_ExistingVpc_True', async () => {
         // Given
-        const givenVpcName = "vpc-deliver";
+        const givenVpcName = 'vpc-deliver';
         const expectedResult = true;
         const logDirectory = 'logs';
         const awsRegion = 'eu-west-3';
@@ -84,7 +86,7 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_NonExistingVpc_False', async () => {
         // Given
-        const givenVpcName = "vpc-name-which-does-not-exist";
+        const givenVpcName = 'vpc-name-which-does-not-exist';
         const expectedResult = false;
         const logDirectory = 'logs';
         const awsRegion = 'eu-west-3';
@@ -99,7 +101,7 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_ExistingInstance_True', async () => {
         // Given
-        const givenInstanceName = "debian";
+        const givenInstanceName = 'debian';
         const expectedResult = true;
         const logDirectory = 'logs';
         const awsRegion = 'eu-west-3';
@@ -114,7 +116,7 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_NonExistingInstance_False', async () => {
         // Given
-        const givenInstanceName = "non-existing-instance";
+        const givenInstanceName = 'non-existing-instance';
         const expectedResult = false;
         const logDirectory = 'logs';
         const awsRegion = 'eu-west-3';

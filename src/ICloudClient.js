@@ -1,3 +1,5 @@
+"use strict";
+
 class ICloudClient {
     static log(name, records, type) {}
 }

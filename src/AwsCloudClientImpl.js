@@ -1,3 +1,5 @@
+"use strict";
+
 const AWS = require('aws-sdk');
 const { ICloudClient } = require('./ICloudClient');
 const { Logger } = require('./Logger');
@@ -173,7 +175,7 @@ class AwsCloudClientImpl extends ICloudClient {
         };
 
         const result = await this.connection
-            .describeVpcs({ Filters: [{ Name: "tag:Name", Values: [name] }] })
+            .describeVpcs({ Filters: [{ Name: 'tag:Name', Values: [name] }] })
             .promise()
             .catch(handleError);
 
@@ -194,7 +196,7 @@ class AwsCloudClientImpl extends ICloudClient {
 
         const result = await this.connection
             .describeInstances({
-                Filters: [{ Name: "tag:Name", Values: [name] }],
+                Filters: [{ Name: 'tag:Name', Values: [name] }],
             })
             .promise()
             .catch(handleError);
@@ -216,7 +218,7 @@ class AwsCloudClientImpl extends ICloudClient {
 
         const result = await this.connection
             .describeImages({
-                Filters: [{ Name: "tag:Name", Values: [name] }],
+                Filters: [{ Name: 'tag:Name', Values: [name] }],
             })
             .promise()
             .catch(handleError);

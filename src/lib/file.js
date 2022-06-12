@@ -1,3 +1,5 @@
+"use strict";
+
 const fs = require('fs');
 
 async function waitForFileToBeWritten() {
@@ -5,7 +7,7 @@ async function waitForFileToBeWritten() {
 }
 
 function getLastLine(filePath) {
-    return fs.readFileSync(filePath, "utf8").trim().split("\n").pop();
+    return fs.readFileSync(filePath, 'utf8').trim().split('\n').pop();
 }
 
 module.exports = { waitForFileToBeWritten, getLastLine };
