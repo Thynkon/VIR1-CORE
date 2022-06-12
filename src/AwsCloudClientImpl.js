@@ -16,6 +16,8 @@ const REGION_NOT_FOUND = 'UnknownEndpoint';
 class AwsCloudClientImpl extends ICloudClient {
     static VPC = 0;
     static INSTANCE = 1;
+    static IMAGE = 2;
+
     /**
      * The connection to the AWS servers that will be used to manipulate the infrastructure.
      * @type {AWS.EC2}
@@ -131,7 +133,7 @@ class AwsCloudClientImpl extends ICloudClient {
     /**
      * Check if region exists
      * @async
-     * @param {integerk} type - The type of resource to check its existence.
+     * @param {integer} type - The type of resource to check its existence.
      * @param {string} name - The name of the resource to check its existence
      * @param {string} vpcName - The vpc name required by the cost team.
      * @returns {Promise<boolean>} The region status.
@@ -148,6 +150,10 @@ class AwsCloudClientImpl extends ICloudClient {
                 result = await this.#instanceExists(name);
                 break;
 
+            case AwsCloudClientImpl.IMAGE:
+                result = await this.#imageExists(name);
+                break;
+
             default:
                 break;
         }
@@ -156,10 +162,10 @@ class AwsCloudClientImpl extends ICloudClient {
     }
 
     /**
-     * Check if the given name exists from the AWS EC2 SDK
-     * @param name {string} name of a VPC
-     * @returns {Promise<boolean>} true if the VPC exists, false otherwise
-     * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcs-property
+     * Check if a vpc with the given name exists.
+     * @param name {string} name of a VPC.
+     * @returns {Promise<boolean>} true if the VPC exists, false otherwise.
+     * @see {@link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcs-property|link describeVpcs}
      */
     async #vpcExists(name) {
         const handleError = (err) => {
@@ -175,10 +181,10 @@ class AwsCloudClientImpl extends ICloudClient {
     }
 
     /**
-     * Check if the given name exists from the AWS EC2 SDK
-     * @param name {string} name of an Instance
-     * @returns {boolean} true if the Instance exists, false otherwise
-     * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property
+     * Check if an instance with the given name exists.
+     * @param name {string} name of an Instance.
+     * @returns {boolean} true if the Instance exists, false otherwise.
+     * @see {@link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInstances-property|link describeInstances}
      */
     async #instanceExists(name) {
         // function always return empty array even if instance does not exist
@@ -194,6 +200,28 @@ class AwsCloudClientImpl extends ICloudClient {
             .catch(handleError);
 
         return result.Reservations.length !== 0;
+    }
+
+    /**
+     * Check if the given name exists from the AWS EC2 SDK
+     * @param name {string} name of an Instance.
+     * @returns {boolean} true if the Instance exists, false otherwise.
+     * @see {@link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeImages-property|link describeImages}
+     */
+    async #imageExists(name) {
+        // function always return empty array even if instance does not exist
+        const handleError = (err) => {
+            throw err;
+        };
+
+        const result = await this.connection
+            .describeImages({
+                Filters: [{ Name: "tag:Name", Values: [name] }],
+            })
+            .promise()
+            .catch(handleError);
+
+        return result.Images.length !== 0;
     }
 }
 

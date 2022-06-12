@@ -67,7 +67,7 @@ describe('AwsCloudClientImpl', () => {
         // Exception is thrown
     });
 
-    test("exists_ExistingVpc_True", async () => {
+    test('exists_ExistingVpc_True', async () => {
         // Given
         const givenVpcName = "vpc-deliver";
         const expectedResult = true;
@@ -76,13 +76,13 @@ describe('AwsCloudClientImpl', () => {
         const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.VPC , givenVpcName);
+        const result = await client.exists(AwsCloudClientImpl.VPC, givenVpcName);
 
         // Then
         expect(result).toBe(expectedResult);
     });
 
-    test("exists_NonExistingVpc_False", async () => {
+    test('exists_NonExistingVpc_False', async () => {
         // Given
         const givenVpcName = "vpc-name-which-does-not-exist";
         const expectedResult = false;
@@ -91,13 +91,13 @@ describe('AwsCloudClientImpl', () => {
         const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.VPC , givenVpcName);
+        const result = await client.exists(AwsCloudClientImpl.VPC, givenVpcName);
 
         // Then
         expect(result).toBe(expectedResult);
     });
 
-    test("exists_ExistingInstance_Success", async () => {
+    test('exists_ExistingInstance_True', async () => {
         // Given
         const givenInstanceName = "debian";
         const expectedResult = true;
@@ -106,13 +106,13 @@ describe('AwsCloudClientImpl', () => {
         const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.INSTANCE , givenInstanceName);
+        const result = await client.exists(AwsCloudClientImpl.INSTANCE, givenInstanceName);
 
         // Then
         expect(result).toBe(expectedResult);
     });
 
-    test("exists_NonExistingInstance_Success", async () => {
+    test('exists_NonExistingInstance_False', async () => {
         // Given
         const givenInstanceName = "non-existing-instance";
         const expectedResult = false;
@@ -121,7 +121,37 @@ describe('AwsCloudClientImpl', () => {
         const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.INSTANCE , givenInstanceName);
+        const result = await client.exists(AwsCloudClientImpl.INSTANCE, givenInstanceName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
+
+    test('exists_ExistingImage_True', async () => {
+        // Given
+        const givenImageName = 'team-backup-ami-jest-1';
+        const expectedResult = true;
+        const logDirectory = 'logs';
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.IMAGE, givenImageName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
+
+    test('exists_NonExistingImage_False', async () => {
+        // Given
+        const givenImageName = 'non-existing-image';
+        const expectedResult = false;
+        const logDirectory = 'logs';
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.IMAGE, givenImageName);
 
         // Then
         expect(result).toBe(expectedResult);
