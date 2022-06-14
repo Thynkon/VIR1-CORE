@@ -12,11 +12,11 @@
     "url": "git+https://github.com/Thynkon/VIR1-CORE.git"
   },
   "dependencies": {
-    "aws-sdk": "^2.1131.0",
-    "log4js": "^6.4.6"
+    "aws-sdk": "^2.1153.0",
+    "log4js": "^6.5.2"
   },
   "devDependencies": {
-    "jest": "^28.1.0",
+    "jest": "^28.1.1",
     "jsdoc": "^3.6.10"
   },
   "keywords": [
