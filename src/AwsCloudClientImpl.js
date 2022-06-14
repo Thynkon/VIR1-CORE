@@ -1,10 +1,10 @@
 "use strict";
 
-const AWS                           = require('aws-sdk');
-const { ICloudClient }              = require('./ICloudClient');
-const { Logger }                    = require('./Logger');
-const { RegionNotFoundException }   = require('./exceptions/RegionNotFoundException');
-const REGION_NOT_FOUND              = 'UnknownEndpoint';
+const AWS = require('aws-sdk');
+const { ICloudClient } = require('./ICloudClient');
+const { Logger } = require('./Logger');
+const { RegionNotFoundException } = require('./exceptions/RegionNotFoundException');
+const REGION_NOT_FOUND = 'UnknownEndpoint';
 
 /**
  * Class that connects to the AWS servers, checks if a resource exists and logs all actions.
@@ -16,9 +16,10 @@ const REGION_NOT_FOUND              = 'UnknownEndpoint';
  * const client = await AwsCloudClientImpl.initialize('eu-west-3', 'logs');
 */
 class AwsCloudClientImpl extends ICloudClient {
-    static VPC      = 0;
+    static VPC = 0;
     static INSTANCE = 1;
-    static IMAGE    = 2;
+    static IMAGE = 2;
+    static KEYPAIR = 3;
 
     /**
      * The AWS servers region to connect to.
@@ -97,7 +98,7 @@ class AwsCloudClientImpl extends ICloudClient {
      * Return the current connection to the AWS servers.
      * @returns {AWS.EC2}
      */
-     get #cloudRegion() {
+    get #cloudRegion() {
         return this.#_cloudRegion;
     }
 
@@ -113,7 +114,7 @@ class AwsCloudClientImpl extends ICloudClient {
      * Return the path of the directory that will contain the log files.
      * @returns {string}
      */
-     get #logPath() {
+    get #logPath() {
         return this.#_logPath;
     }
 
@@ -197,6 +198,10 @@ class AwsCloudClientImpl extends ICloudClient {
                 result = await this.#imageExists(name);
                 break;
 
+            case AwsCloudClientImpl.KEYPAIR:
+                result = await this.#keypairExists(name);
+                break;
+
             default:
                 break;
         }
@@ -265,6 +270,28 @@ class AwsCloudClientImpl extends ICloudClient {
             .catch(handleError);
 
         return result.Images.length !== 0;
+    }
+
+    /**
+     * Check if a keypair with the given name exists.
+     * @param name {string} name of a keypair
+     * @returns {Promise<boolean>} true if the keypair exists, false otherwise
+     * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcs-property
+     */
+    async #keypairExists(name) {
+        const handleError = (err) => {
+            Logger.error(err.message);
+            throw err;
+        };
+
+        const result = await this.connection
+            .describeKeyPairs({
+                Filters: [{ Name: "key-name", Values: [name] }]
+            })
+            .promise()
+            .catch(handleError);
+
+        return result.KeyPairs.length !== 0;
     }
 }
 

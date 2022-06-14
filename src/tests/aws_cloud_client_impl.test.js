@@ -73,9 +73,8 @@ describe('AwsCloudClientImpl', () => {
         // Given
         const givenVpcName = 'vpc-deliver';
         const expectedResult = true;
-        const logDirectory = 'logs';
         const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
 
         // When
         const result = await client.exists(AwsCloudClientImpl.VPC, givenVpcName);
@@ -88,9 +87,8 @@ describe('AwsCloudClientImpl', () => {
         // Given
         const givenVpcName = 'vpc-name-which-does-not-exist';
         const expectedResult = false;
-        const logDirectory = 'logs';
         const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
 
         // When
         const result = await client.exists(AwsCloudClientImpl.VPC, givenVpcName);
@@ -103,9 +101,8 @@ describe('AwsCloudClientImpl', () => {
         // Given
         const givenInstanceName = 'debian';
         const expectedResult = true;
-        const logDirectory = 'logs';
         const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
 
         // When
         const result = await client.exists(AwsCloudClientImpl.INSTANCE, givenInstanceName);
@@ -118,9 +115,8 @@ describe('AwsCloudClientImpl', () => {
         // Given
         const givenInstanceName = 'non-existing-instance';
         const expectedResult = false;
-        const logDirectory = 'logs';
         const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
 
         // When
         const result = await client.exists(AwsCloudClientImpl.INSTANCE, givenInstanceName);
@@ -133,9 +129,8 @@ describe('AwsCloudClientImpl', () => {
         // Given
         const givenImageName = 'team-backup-ami-jest-1';
         const expectedResult = true;
-        const logDirectory = 'logs';
         const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
 
         // When
         const result = await client.exists(AwsCloudClientImpl.IMAGE, givenImageName);
@@ -148,12 +143,39 @@ describe('AwsCloudClientImpl', () => {
         // Given
         const givenImageName = 'non-existing-image';
         const expectedResult = false;
-        const logDirectory = 'logs';
         const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
 
         // When
         const result = await client.exists(AwsCloudClientImpl.IMAGE, givenImageName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
+
+    test("exists_ExistingName_Success", async () => {
+        // Given
+        const givenKeyPairName = "test";
+        const expectedResult = true;
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.KEYPAIR, givenKeyPairName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
+
+    test("exists_NotExistingName_Success", async () => {
+        // Given
+        const givenKeyPairName = "keypair-name-which-does-not-exist";
+        const expectedResult = false;
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.KEYPAIR, givenKeyPairName);
 
         // Then
         expect(result).toBe(expectedResult);
