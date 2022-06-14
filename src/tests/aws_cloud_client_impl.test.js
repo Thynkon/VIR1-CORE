@@ -1,10 +1,10 @@
 "use strict";
 
-const AWS                                       = require('aws-sdk');
-const { AwsCloudClientImpl }                    = require('../AwsCloudClientImpl');
-const { Logger }                                = require('../Logger');
-const { waitForFileToBeWritten, getLastLine }   = require('../lib/file');
-const { RegionNotFoundException }               = require('../exceptions/RegionNotFoundException');
+const AWS = require('aws-sdk');
+const { AwsCloudClientImpl } = require('../AwsCloudClientImpl');
+const { Logger } = require('../Logger');
+const { waitForFileToBeWritten, getLastLine } = require('../lib/file');
+const { RegionNotFoundException } = require('../exceptions/RegionNotFoundException');
 
 describe('AwsCloudClientImpl', () => {
     test('info_LogInInfoLogFile_Success', async () => {
@@ -180,4 +180,36 @@ describe('AwsCloudClientImpl', () => {
         // Then
         expect(result).toBe(expectedResult);
     });
+
+    test('exists_ExistingBudget_True', async () => {
+        // Given
+        const givenBudgetName = 'SaaS-CPNV';
+        const accountId = '709024702237';
+        const expectedResult = true;
+        const logDirectory = 'logs';
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory, accountId);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.BUDGET, givenBudgetName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
+
+    test('exists_NonExistingBudget_True', async () => {
+        // Given
+        const givenBudgetName = 'non-existing-budget';
+        const accountId = '709024702237';
+        const expectedResult = false;
+        const logDirectory = 'logs';
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory, accountId);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.BUDGET, givenBudgetName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    })
 });

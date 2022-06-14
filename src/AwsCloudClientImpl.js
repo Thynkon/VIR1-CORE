@@ -5,6 +5,7 @@ const { ICloudClient } = require('./ICloudClient');
 const { Logger } = require('./Logger');
 const { RegionNotFoundException } = require('./exceptions/RegionNotFoundException');
 const REGION_NOT_FOUND = 'UnknownEndpoint';
+const BUDGET_NOT_FONUD = 'NotFoundException';
 
 /**
  * Class that connects to the AWS servers, checks if a resource exists and logs all actions.
@@ -20,6 +21,7 @@ class AwsCloudClientImpl extends ICloudClient {
     static INSTANCE = 1;
     static IMAGE = 2;
     static KEYPAIR = 3;
+    static BUDGET = 4;
 
     /**
      * The AWS servers region to connect to.
@@ -43,21 +45,24 @@ class AwsCloudClientImpl extends ICloudClient {
     #_logPath;
 
     /**
+     * The account id needed to fetch budget information.
+     * @type {string}
+     * @private
+     */
+    #_accountId
+
+    /**
      * Setup the default log appender
      * @constructor 
      * @param {string} cloudRegion - The AWS region to connect to.
      * @param {string} logPath - The path to the log file.
+     * @param {string} accountId - The id of the account to fetch budgets from.
      */
-    constructor(cloudRegion, logPath) {
+    constructor(cloudRegion, logPath, accountId) {
         super();
-        if (AwsCloudClientImpl.instance) {
-            return AwsCloudClientImpl.instance;
-        }
-        AwsCloudClientImpl.instance = this;
 
         this.#cloudRegion = cloudRegion;
-        this.#connection = new AWS.EC2({ region: this.#cloudRegion });
-
+        this.#_accountId = accountId;
         this.#logPath = logPath;
     }
 
@@ -66,16 +71,17 @@ class AwsCloudClientImpl extends ICloudClient {
      * @static
      * @param {string} cloudRegion - The AWS region to connect to.
      * @param {string} logPath - The path to the log file.
+     * @param {string} accountId - The id of the account to fetch budgets from.
      * @exception RegionNotFoundException is thrown if the specified region does not exist.
      */
-    static async initialize(cloudRegion, logPath) {
+    static async initialize(cloudRegion, logPath, accountId) {
         const exists = await this.#regionExists(cloudRegion);
 
         if (!exists) {
             throw new RegionNotFoundException();
         }
 
-        return new AwsCloudClientImpl(cloudRegion, logPath);
+        return new AwsCloudClientImpl(cloudRegion, logPath, accountId);
     }
 
     /**
@@ -83,15 +89,22 @@ class AwsCloudClientImpl extends ICloudClient {
      * @returns {AWS.EC2}
      */
     get connection() {
+        if (this.#_connection == null) {
+            if (this.#accountId) {
+                this.#connection = new AWS.Budgets()
+            } else {
+                this.#connection = new AWS.EC2({ region: this.#cloudRegion });
+            }
+        }
         return this.#_connection;
     }
 
     /**
      * Modify the current connection to the AWS servers.
-     * @param {AWS.EC2} con - The AWS region to connect to.
+     * @param {AWS.EC2} connection - The AWS region to connect to.
      */
-    set #connection(con) {
-        this.#_connection = con;
+    set #connection(connection) {
+        this.#_connection = connection;
     }
 
     /**
@@ -124,6 +137,22 @@ class AwsCloudClientImpl extends ICloudClient {
      */
     set #cloudRegion(region) {
         this.#_cloudRegion = region;
+    }
+
+    /**
+     * Return the current connection to the AWS servers.
+     * @returns {AWS.EC2}
+     */
+    get #accountId() {
+        return this.#_accountId;
+    }
+
+    /**
+     * Modify the current connection to the AWS servers.
+     * @param {AWS.EC2} con - The AWS region to connect to.
+     */
+    set #accountId(accountId) {
+        this.#_accountId = accountId;
     }
 
     /**
@@ -200,6 +229,10 @@ class AwsCloudClientImpl extends ICloudClient {
 
             case AwsCloudClientImpl.KEYPAIR:
                 result = await this.#keypairExists(name);
+                break;
+
+            case AwsCloudClientImpl.BUDGET:
+                result = await this.#budgetExists(name);
                 break;
 
             default:
@@ -292,6 +325,31 @@ class AwsCloudClientImpl extends ICloudClient {
             .catch(handleError);
 
         return result.KeyPairs.length !== 0;
+    }
+
+    /**
+     * Check if a budget with the given name exists.
+     * @param name {string} name of an Instance.
+     * @returns {boolean} true if the Instance exists, false otherwise.
+     * @see {@link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Budgets.html#describeBudget-property|link describeBudget}
+     */
+    async #budgetExists(name) {
+        const handleError = (err) => {
+            if (err.code === BUDGET_NOT_FONUD) {
+                return false;
+            }
+            throw err;
+        };
+
+        const result = await this.connection
+            .describeBudget({
+                AccountId: this.#accountId,
+                BudgetName: name,
+            })
+            .promise()
+            .catch(handleError);
+
+        return result ? true : false;
     }
 }
 
