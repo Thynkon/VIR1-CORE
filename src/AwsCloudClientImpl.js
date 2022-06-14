@@ -1,10 +1,10 @@
 "use strict";
 
-const AWS = require('aws-sdk');
-const { ICloudClient } = require('./ICloudClient');
-const { Logger } = require('./Logger');
-const { RegionNotFoundException } = require('./exceptions/RegionNotFoundException');
-const REGION_NOT_FOUND = 'UnknownEndpoint';
+const AWS                           = require('aws-sdk');
+const { ICloudClient }              = require('./ICloudClient');
+const { Logger }                    = require('./Logger');
+const { RegionNotFoundException }   = require('./exceptions/RegionNotFoundException');
+const REGION_NOT_FOUND              = 'UnknownEndpoint';
 
 /**
  * Class that connects to the AWS servers, checks if a resource exists and logs all actions.
@@ -16,23 +16,30 @@ const REGION_NOT_FOUND = 'UnknownEndpoint';
  * const client = await AwsCloudClientImpl.initialize('eu-west-3', 'logs');
 */
 class AwsCloudClientImpl extends ICloudClient {
-    static VPC = 0;
+    static VPC      = 0;
     static INSTANCE = 1;
-    static IMAGE = 2;
+    static IMAGE    = 2;
+
+    /**
+     * The AWS servers region to connect to.
+     * @type {string}
+     * @private
+     */
+    #_cloudRegion = null;
 
     /**
      * The connection to the AWS servers that will be used to manipulate the infrastructure.
      * @type {AWS.EC2}
-     * @public
+     * @private
      */
-    connection;
+    #_connection = null;
 
     /**
      * Directory to store log files.
      * @type {string}
-     * @public
+     * @private
      */
-    logPath;
+    #_logPath;
 
     /**
      * Setup the default log appender
@@ -47,8 +54,10 @@ class AwsCloudClientImpl extends ICloudClient {
         }
         AwsCloudClientImpl.instance = this;
 
-        this.#connection = new AWS.EC2({ region: cloudRegion });
-        this.logPath = logPath;
+        this.#cloudRegion = cloudRegion;
+        this.#connection = new AWS.EC2({ region: this.#cloudRegion });
+
+        this.#logPath = logPath;
     }
 
     /**
@@ -73,7 +82,7 @@ class AwsCloudClientImpl extends ICloudClient {
      * @returns {AWS.EC2}
      */
     get connection() {
-        return this.connection;
+        return this.#_connection;
     }
 
     /**
@@ -81,7 +90,39 @@ class AwsCloudClientImpl extends ICloudClient {
      * @param {AWS.EC2} con - The AWS region to connect to.
      */
     set #connection(con) {
-        this.connection = con;
+        this.#_connection = con;
+    }
+
+    /**
+     * Return the current connection to the AWS servers.
+     * @returns {AWS.EC2}
+     */
+     get #cloudRegion() {
+        return this.#_cloudRegion;
+    }
+
+    /**
+     * Modify the location to store log files.
+     * @param {string} path - The path to the directory that will contain the log files.
+     */
+    set #logPath(path) {
+        this.#_logPath = path;
+    }
+
+    /**
+     * Return the path of the directory that will contain the log files.
+     * @returns {string}
+     */
+     get #logPath() {
+        return this.#_logPath;
+    }
+
+    /**
+     * Modify the current connection to the AWS servers.
+     * @param {AWS.EC2} con - The AWS region to connect to.
+     */
+    set #cloudRegion(region) {
+        this.#_cloudRegion = region;
     }
 
     /**
@@ -205,7 +246,7 @@ class AwsCloudClientImpl extends ICloudClient {
     }
 
     /**
-     * Check if the given name exists from the AWS EC2 SDK
+     * Check if an image with the given name exists.
      * @param name {string} name of an Instance.
      * @returns {boolean} true if the Instance exists, false otherwise.
      * @see {@link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeImages-property|link describeImages}

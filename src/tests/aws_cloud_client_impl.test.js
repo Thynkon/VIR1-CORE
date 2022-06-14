@@ -1,10 +1,10 @@
 "use strict";
 
-const { AwsCloudClientImpl } = require('../AwsCloudClientImpl');
-const { Logger } = require('../Logger');
-const AWS = require('aws-sdk');
-const { waitForFileToBeWritten, getLastLine } = require('../lib/file');
-const { RegionNotFoundException } = require('../exceptions/RegionNotFoundException');
+const AWS                                       = require('aws-sdk');
+const { AwsCloudClientImpl }                    = require('../AwsCloudClientImpl');
+const { Logger }                                = require('../Logger');
+const { waitForFileToBeWritten, getLastLine }   = require('../lib/file');
+const { RegionNotFoundException }               = require('../exceptions/RegionNotFoundException');
 
 describe('AwsCloudClientImpl', () => {
     test('info_LogInInfoLogFile_Success', async () => {
