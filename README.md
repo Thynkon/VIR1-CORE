@@ -31,10 +31,10 @@
 
 <!-- PROJECT LOGO -->
 <br />
-<p align="center">
-  <p align="center">
+<p style="text-align:center;">
+  <p style="text-align:center;">
     <br />
-    <a href="./doc"><strong>Explore the docs »</strong></a>
+    <a href="./doc"><strong>Explore the docs</strong></a>
     <br />
     <br />
     <a href="https://github.com/Thynkon/VIR1-CORE/issues">Report Bug</a>
@@ -90,7 +90,7 @@ This is a project that provides classes that will be used by all the developers 
 To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
-Before cloning this project, make sure you have the following packages/programs installd on your system:
+Before cloning this project, make sure you have the following packages/programs installed on your system:
 - [NodeJS](https://nodejs.org)
 - [Npm](https://www.npmjs.com)
 
