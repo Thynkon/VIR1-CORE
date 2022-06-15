@@ -34,7 +34,6 @@ class Logger {
             this.#setupLogger();
             this.#_logger = log4js.getLogger();
         }
-
         return this.#_logger;
     }
 

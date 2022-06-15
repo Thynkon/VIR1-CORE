@@ -9,6 +9,7 @@ describe('Logger', () => {
         const infoLogFile = './logs/INFO.log';
 
         // When
+        //TODO NGY - Missing log path parameter in info message ?
         Logger.info(message);
 
         // Then
@@ -23,10 +24,22 @@ describe('Logger', () => {
         const errorLogFile = './logs/ERROR.log';
 
         // When
+        //TODO NGY - Missing log path parameter in info message ?
         Logger.error(message);
 
         // Then
         await waitForFileToBeWritten();
         expect(getLastLine(errorLogFile)).toContain(expectedLogLine);
+    });
+
+    test('info_LogInInfoLogFile_ThrowException', async () => {
+        // Given
+        //TODO NGY - Kind of exception throw by the log4js package (file not found, permission)
+
+        // When
+
+
+        // Then
+
     });
 });
