@@ -24,6 +24,7 @@ class AwsCloudClientImpl extends ICloudClient {
     static BUDGET = 4;
     static SUBNET = 5;
     static INTERNET_GATEWAY = 6;
+    static SNAPSHOT = 7;
 
     /**
      * The AWS servers region to connect to.
@@ -245,6 +246,10 @@ class AwsCloudClientImpl extends ICloudClient {
                 result = await this.#internetGatewayExists(name);
                 break;
 
+            case AwsCloudClientImpl.SNAPSHOT:
+                result = await this.#snapshotExists(name);
+                break;
+
             default:
                 break;
         }
@@ -404,6 +409,28 @@ class AwsCloudClientImpl extends ICloudClient {
             .catch(handleError);
 
         return result.InternetGateways.length !== 0;
+    }
+
+    /**
+     * Check if a snapshot with the given name exists.
+     * @param name {string} name of a snapshot
+     * @returns {Promise<boolean>} true if the snapshot exists, false otherwise
+     * @see {@link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSnapshots-property|link describeSnapshots}
+     */
+    async #snapshotExists(name) {
+        const handleError = (err) => {
+            Logger.error(err.message);
+            throw err;
+        };
+
+        const result = await this.connection
+            .describeSnapshots({
+                Filters: [{ Name: 'tag:Name', Values: [name] }],
+            })
+            .promise()
+            .catch(handleError);
+
+        return result.Snapshots.length !== 0;
     }
 }
 

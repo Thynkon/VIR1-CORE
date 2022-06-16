@@ -268,4 +268,32 @@ describe('AwsCloudClientImpl', () => {
         // Then
         expect(result).toBe(expectedResult);
     });
+
+    test('exists_ExistingSnapshot_True', async () => {
+        // Given
+        const givenSnapshotName = 'snapshot-core-01';
+        const expectedResult = true;
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.SNAPSHOT, givenSnapshotName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
+
+    test('exists_NonExistingSnapshot_True', async () => {
+        // Given
+        const givenSnapshotName = 'non-existing-snapshot';
+        const expectedResult = false;
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.SNAPSHOT, givenSnapshotName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
 });
