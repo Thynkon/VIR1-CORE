@@ -65,7 +65,7 @@ class AwsCloudClientImpl extends ICloudClient {
         super();
 
         this.#cloudRegion = cloudRegion;
-        this.#_accountId = accountId;
+        this.#accountId = accountId;
         this.#logPath = logPath;
     }
 
@@ -210,11 +210,10 @@ class AwsCloudClientImpl extends ICloudClient {
      * Check if region exists
      * @async
      * @param {integer} type - The type of resource to check its existence.
-     * @param {string} name - The name of the resource to check its existence
-     * @param {string} vpcName - The vpc name required by the cost team.
+     * @param {string} name - The name of the resource to check its existence.
      * @returns {Promise<boolean>} The region status.
      */
-    async exists(type, name, vpcName) {
+    async exists(type, name) {
         let result;
 
         switch (type) {
@@ -322,8 +321,8 @@ class AwsCloudClientImpl extends ICloudClient {
 
     /**
      * Check if a keypair with the given name exists.
-     * @param name {string} name of a keypair
-     * @returns {Promise<boolean>} true if the keypair exists, false otherwise
+     * @param name {string} name of a keypair.
+     * @returns {Promise<boolean>} true if the keypair exists, false otherwise.
      * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeVpcs-property
      */
     async #keypairExists(name) {
@@ -369,8 +368,8 @@ class AwsCloudClientImpl extends ICloudClient {
 
     /**
      * Check if a subnet with the given name exists.
-     * @param name {string} name of a subnet
-     * @returns {Promise<boolean>} true if the subnet exists, false otherwise
+     * @param name {string} name of a subnet.
+     * @returns {Promise<boolean>} true if the subnet exists, false otherwise.
      * @see {@link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSubnets-property|link describeSubnets}
      */
     async #subnetExists(name) {
@@ -391,8 +390,8 @@ class AwsCloudClientImpl extends ICloudClient {
 
     /**
      * Check if an internet gateway with the given name exists.
-     * @param name {string} name of an internet gateway
-     * @returns {Promise<boolean>} true if the internet gateway exists, false otherwise
+     * @param name {string} name of an internet gateway.
+     * @returns {Promise<boolean>} true if the internet gateway exists, false otherwise.
      * @see {@link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property|link describeInternetGateways}
      */
     async #internetGatewayExists(name) {
@@ -413,8 +412,8 @@ class AwsCloudClientImpl extends ICloudClient {
 
     /**
      * Check if a snapshot with the given name exists.
-     * @param name {string} name of a snapshot
-     * @returns {Promise<boolean>} true if the snapshot exists, false otherwise
+     * @param name {string} name of a snapshot.
+     * @returns {Promise<boolean>} true if the snapshot exists, false otherwise.
      * @see {@link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSnapshots-property|link describeSnapshots}
      */
     async #snapshotExists(name) {
