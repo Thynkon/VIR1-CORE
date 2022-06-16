@@ -22,6 +22,7 @@ class AwsCloudClientImpl extends ICloudClient {
     static IMAGE = 2;
     static KEYPAIR = 3;
     static BUDGET = 4;
+    static SUBNET = 5;
 
     /**
      * The AWS servers region to connect to.
@@ -235,6 +236,10 @@ class AwsCloudClientImpl extends ICloudClient {
                 result = await this.#budgetExists(name);
                 break;
 
+            case AwsCloudClientImpl.SUBNET:
+                result = await this.#subnetExists(name);
+                break;
+
             default:
                 break;
         }
@@ -350,6 +355,29 @@ class AwsCloudClientImpl extends ICloudClient {
             .catch(handleError);
 
         return result ? true : false;
+    }
+
+    /**
+     * Check if a subnet with the given name exists.
+     * @param name {string} name of a subnet
+     * @returns {Promise<boolean>} true if the subnet exists, false otherwise
+     * @see {@link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeSubnets-property|link describeSubnets}
+     */
+    async #subnetExists(name) {
+        const handleError = (err) => {
+            Logger.error(err.message);
+            throw err;
+        };
+
+        const result = await this.connection
+            .describeSubnets({
+                // Filters: [{ Name: "key-name", Values: [name] }]
+                Filters: [{ Name: 'tag:Name', Values: [name] }],
+            })
+            .promise()
+            .catch(handleError);
+
+        return result.Subnets.length !== 0;
     }
 }
 

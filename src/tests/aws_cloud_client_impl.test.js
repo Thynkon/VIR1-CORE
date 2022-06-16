@@ -212,4 +212,32 @@ describe('AwsCloudClientImpl', () => {
         // Then
         expect(result).toBe(expectedResult);
     })
+
+    test('exists_ExistingSubnet_True', async () => {
+        // Given
+        const givenSubnetName = 'subnet_test_deploy';
+        const expectedResult = true;
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.SUBNET, givenSubnetName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
+
+    test('exists_NonExistingSubnet_False', async () => {
+        // Given
+        const givenSubnetName = 'non-existing-subnet';
+        const expectedResult = false;
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.SUBNET, givenSubnetName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
 });
