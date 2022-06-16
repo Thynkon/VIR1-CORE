@@ -215,7 +215,7 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_ExistingSubnet_True', async () => {
         // Given
-        const givenSubnetName = 'subnet_test_deploy';
+        const givenSubnetName = 'subnet-deliver-01';
         const expectedResult = true;
         const awsRegion = 'eu-west-3';
         const client = await AwsCloudClientImpl.initialize(awsRegion);
@@ -236,6 +236,34 @@ describe('AwsCloudClientImpl', () => {
 
         // When
         const result = await client.exists(AwsCloudClientImpl.SUBNET, givenSubnetName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
+
+    test('exists_ExistingInternetGateway_True', async () => {
+        // Given
+        const givenInternetGatewayName = 'gty-01';
+        const expectedResult = true;
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.INTERNET_GATEWAY, givenInternetGatewayName);
+
+        // Then
+        expect(result).toBe(expectedResult);
+    });
+
+    test('exists_NonExistingInternetGateway_False', async () => {
+        // Given
+        const givenInternetGatewayName = 'non-existing-internet-gateway';
+        const expectedResult = false;
+        const awsRegion = 'eu-west-3';
+        const client = await AwsCloudClientImpl.initialize(awsRegion);
+
+        // When
+        const result = await client.exists(AwsCloudClientImpl.INTERNET_GATEWAY, givenInternetGatewayName);
 
         // Then
         expect(result).toBe(expectedResult);

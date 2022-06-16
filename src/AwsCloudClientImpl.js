@@ -23,6 +23,7 @@ class AwsCloudClientImpl extends ICloudClient {
     static KEYPAIR = 3;
     static BUDGET = 4;
     static SUBNET = 5;
+    static INTERNET_GATEWAY = 6;
 
     /**
      * The AWS servers region to connect to.
@@ -240,6 +241,10 @@ class AwsCloudClientImpl extends ICloudClient {
                 result = await this.#subnetExists(name);
                 break;
 
+            case AwsCloudClientImpl.INTERNET_GATEWAY:
+                result = await this.#internetGatewayExists(name);
+                break;
+
             default:
                 break;
         }
@@ -371,13 +376,34 @@ class AwsCloudClientImpl extends ICloudClient {
 
         const result = await this.connection
             .describeSubnets({
-                // Filters: [{ Name: "key-name", Values: [name] }]
                 Filters: [{ Name: 'tag:Name', Values: [name] }],
             })
             .promise()
             .catch(handleError);
 
         return result.Subnets.length !== 0;
+    }
+
+    /**
+     * Check if an internet gateway with the given name exists.
+     * @param name {string} name of an internet gateway
+     * @returns {Promise<boolean>} true if the internet gateway exists, false otherwise
+     * @see {@link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeInternetGateways-property|link describeInternetGateways}
+     */
+    async #internetGatewayExists(name) {
+        const handleError = (err) => {
+            Logger.error(err.message);
+            throw err;
+        };
+
+        const result = await this.connection
+            .describeInternetGateways({
+                Filters: [{ Name: 'tag:Name', Values: [name] }],
+            })
+            .promise()
+            .catch(handleError);
+
+        return result.InternetGateways.length !== 0;
     }
 }
 
