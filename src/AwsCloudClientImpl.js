@@ -86,11 +86,9 @@ class AwsCloudClientImpl extends ICloudClient {
     log(message, type = Logger.INFO) {
         switch (type) {
             case Logger.INFO:
-                //TODO NGY - as in logger test class, you call the info only with one parameter (log path missing)
                 Logger.info(message);
                 break;
             case Logger.ERROR:
-                //TODO NGY - as in logger test class, you call the info only with one parameter (log path missing)
                 Logger.error(message);
                 break;
             default:
