@@ -63,7 +63,7 @@ class Logger {
      * @param {string} message - The message to be logged
      * @param {string} path - The path of the log file
      */
-    static info(message, path) {
+    static info(message, path = "logs") {
         if (path) {
             this.#setupLogger(path);
         }
@@ -75,7 +75,7 @@ class Logger {
      * @param {string} message - The message to be logged
      * @param {string} path - The path of the log file
      */
-    static error(message, path) {
+    static error(message, path = "logs") {
         if (path) {
             this.#setupLogger(path);
         }
