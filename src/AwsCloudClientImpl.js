@@ -29,7 +29,7 @@ class AwsCloudClientImpl extends ICloudClient {
     logPath;
 
     /**
-     * Setup the default log appender
+     * Set up the default log appender
      * @constructor 
      * @param {string} cloudRegion - The AWS region to connect to.
      * @param {string} logPath - The path to the log file.
@@ -46,7 +46,7 @@ class AwsCloudClientImpl extends ICloudClient {
     }
 
     /**
-     * Setup the cloud client by checking if region exists and returning a new instance.
+     * Set up the cloud client by checking if region exists and returning a new instance.
      * @static
      * @param {string} cloudRegion - The AWS region to connect to.
      * @param {string} logPath - The path to the log file.
@@ -104,6 +104,8 @@ class AwsCloudClientImpl extends ICloudClient {
      * @returns {Promise<boolean>} The region status.
      * @see {@link https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#describeRegions-property|link describeRegions}
      */
+
+    //TODO NGY - now way to call (as for the helper) a exists method who can check if the region "resource" exists ?
     static async #regionExists(region) {
         const ec2 = new AWS.EC2({ region: region });
         const params = { Filters: [{ Name: 'region-name', Values: [region] }] };
