@@ -7,61 +7,74 @@ const { Vpc } = require('./Vpc');
 const { waitForFileToBeWritten, getLastLine } = require('../lib/file');
 const { RegionNotFoundException } = require('../exceptions/RegionNotFoundException');
 
-describe('AwsCloudClientImpl', () => {
+describe('AwsCloudClientImpl_log_Logger', () => {
+    let message;
+    let expectedLogLine;
+    let logDirectory;
+    let logName;
+    let logType;
+    let logFile;
+    let awsRegion;
+    let client;
+
+    beforeAll(async () => {
+        awsRegion = 'eu-west-3';
+        client = await AwsCloudClientImpl.initialize(awsRegion);
+        logDirectory = 'logs';
+    });
+
     test('info_LogInInfoLogFile_Success', async () => {
         // Given
-        const message = 'Test info message';
-        const expectedLogLine = `[INFO] - ${message}`;
-        const logDirectory = 'logs';
-        const logName = 'INFO.log';
-        const logType = Logger.INFO;
-        const infoLogFile = `${logDirectory}/${logName}`;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+        message = 'Test info message';
+        expectedLogLine = `[INFO] - ${message}`;
+        logName = 'INFO.log';
+        logType = Logger.INFO;
+        logFile = `${logDirectory}/${logName}`;
 
         // When
         client.log(message, logType);
 
         // Then
         await waitForFileToBeWritten();
-        expect(getLastLine(infoLogFile)).toContain(expectedLogLine);
+        expect(getLastLine(logFile)).toContain(expectedLogLine);
     });
 
     test('error_LogInErrorLogFile_Success', async () => {
         // Given
-        const message = 'Test error message';
-        const expectedLogLine = `[ERROR] - ${message}`;
-        const logDirectory = 'logs';
-        const logName = 'ERROR.log';
-        const logType = Logger.ERROR;
-        const errorLogFile = `${logDirectory}/${logName}`;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory);
+        message = 'Test error message';
+        expectedLogLine = `[ERROR] - ${message}`;
+        logName = 'ERROR.log';
+        logType = Logger.ERROR;
+        logFile = `${logDirectory}/${logName}`;
 
         // When
         client.log(message, logType);
 
         // Then
         await waitForFileToBeWritten();
-        expect(getLastLine(errorLogFile)).toContain(expectedLogLine);
+        expect(getLastLine(logFile)).toContain(expectedLogLine);
     });
+});
+
+describe('AwsCloudClientImpl_initialize', () => {
+    let awsRegion;
 
     test('connection_ConnectToExistingRegion_Success', async () => {
         // Given
-        const awsRegion = 'eu-west-3';
+        awsRegion = 'eu-west-3';
         const client = await AwsCloudClientImpl.initialize(awsRegion);
         const connection = new AWS.EC2({region: awsRegion});
 
         // When
-        const client_connection = client.connection
+        const clientConnection = client.connection
 
         // Then
-        expect(client_connection.config.region).toEqual(connection.config.region);
+        expect(clientConnection.config.region).toEqual(connection.config.region);
     });
 
     test('connection_ConnectToNonExistingRegion_ThrowException', async () => {
         // Given
-        const awsRegion = 'non-existing-region';
+        awsRegion = 'non-existing-region';
 
         // When
         await expect(AwsCloudClientImpl.initialize(awsRegion)).rejects.toThrow(RegionNotFoundException);
@@ -69,16 +82,27 @@ describe('AwsCloudClientImpl', () => {
         // Then
         // Exception is thrown
     });
+});
+
+describe('AwsCloudClientImpl_exists_Vpc', () => {
+    let givenVpcName;
+    let awsRegion;
+    let expectedResult;
+    let client;
+    let result;
+
+    beforeAll(async () => {
+        awsRegion = 'eu-west-3';
+        client = await AwsCloudClientImpl.initialize(awsRegion);
+    });
 
     test('exists_ExistingVpc_True', async () => {
         // Given
-        const givenVpcName = 'vpc-deliver';
-        const expectedResult = true;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenVpcName = 'vpc-deliver';
+        expectedResult = true;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.VPC, givenVpcName);
+        result = await client.exists(AwsCloudClientImpl.VPC, givenVpcName);
 
         // Then
         expect(result).toBe(expectedResult);
@@ -86,27 +110,36 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_NonExistingVpc_False', async () => {
         // Given
-        const givenVpcName = 'vpc-name-which-does-not-exist';
-        const expectedResult = false;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenVpcName = 'vpc-name-which-does-not-exist';
+        expectedResult = false;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.VPC, givenVpcName);
+        result = await client.exists(AwsCloudClientImpl.VPC, givenVpcName);
 
         // Then
         expect(result).toBe(expectedResult);
     });
+});
+
+describe('AwsCloudClientImpl_exists_Instance', () => {
+    let givenInstanceName;
+    let awsRegion;
+    let expectedResult;
+    let client;
+    let result;
+
+    beforeAll(async () => {
+        awsRegion = 'eu-west-3';
+        client = await AwsCloudClientImpl.initialize(awsRegion);
+    });
 
     test('exists_ExistingInstance_True', async () => {
         // Given
-        const givenInstanceName = 'debian';
-        const expectedResult = true;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenInstanceName = 'debian';
+        expectedResult = true;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.INSTANCE, givenInstanceName);
+        result = await client.exists(AwsCloudClientImpl.INSTANCE, givenInstanceName);
 
         // Then
         expect(result).toBe(expectedResult);
@@ -114,27 +147,36 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_NonExistingInstance_False', async () => {
         // Given
-        const givenInstanceName = 'non-existing-instance';
-        const expectedResult = false;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenInstanceName = 'non-existing-instance';
+        expectedResult = false;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.INSTANCE, givenInstanceName);
+        result = await client.exists(AwsCloudClientImpl.INSTANCE, givenInstanceName);
 
         // Then
         expect(result).toBe(expectedResult);
     });
+});
+
+describe('AwsCloudClientImpl_exists_Image', () => {
+    let givenImageName;
+    let awsRegion;
+    let expectedResult;
+    let client;
+    let result;
+
+    beforeAll(async () => {
+        awsRegion = 'eu-west-3';
+        client = await AwsCloudClientImpl.initialize(awsRegion);
+    });
 
     test('exists_ExistingImage_True', async () => {
         // Given
-        const givenImageName = 'ami-core-01';
-        const expectedResult = true;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenImageName = 'ami-core-01';
+        expectedResult = true;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.IMAGE, givenImageName);
+        result = await client.exists(AwsCloudClientImpl.IMAGE, givenImageName);
 
         // Then
         expect(result).toBe(expectedResult);
@@ -142,27 +184,36 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_NonExistingImage_False', async () => {
         // Given
-        const givenImageName = 'non-existing-image';
-        const expectedResult = false;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenImageName = 'non-existing-image';
+        expectedResult = false;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.IMAGE, givenImageName);
+        result = await client.exists(AwsCloudClientImpl.IMAGE, givenImageName);
 
         // Then
         expect(result).toBe(expectedResult);
     });
+});
+
+describe('AwsCloudClientImpl_exists_KeyPair', () => {
+    let givenKeyPairName;
+    let awsRegion;
+    let expectedResult;
+    let client;
+    let result;
+
+    beforeAll(async () => {
+        awsRegion = 'eu-west-3';
+        client = await AwsCloudClientImpl.initialize(awsRegion);
+    });
 
     test("exists_ExistingName_Success", async () => {
         // Given
-        const givenKeyPairName = "test";
-        const expectedResult = true;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenKeyPairName = "test";
+        expectedResult = true;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.KEYPAIR, givenKeyPairName);
+        result = await client.exists(AwsCloudClientImpl.KEYPAIR, givenKeyPairName);
 
         // Then
         expect(result).toBe(expectedResult);
@@ -170,29 +221,40 @@ describe('AwsCloudClientImpl', () => {
 
     test("exists_NotExistingName_Success", async () => {
         // Given
-        const givenKeyPairName = "keypair-name-which-does-not-exist";
-        const expectedResult = false;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenKeyPairName = "keypair-name-which-does-not-exist";
+        expectedResult = false;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.KEYPAIR, givenKeyPairName);
+        result = await client.exists(AwsCloudClientImpl.KEYPAIR, givenKeyPairName);
 
         // Then
         expect(result).toBe(expectedResult);
     });
+});
+
+describe('AwsCloudClientImpl_exists_Budget', () => {
+    let givenBudgetName;
+    let awsRegion;
+    let accountId;
+    let expectedResult;
+    let logDirectory;
+    let client;
+    let result;
+
+    beforeAll(async () => {
+        awsRegion = 'eu-west-3';
+        accountId = '709024702237';
+        logDirectory = 'logs';
+        client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory, accountId);
+    });
 
     test('exists_ExistingBudget_True', async () => {
         // Given
-        const givenBudgetName = 'SaaS-CPNV';
-        const accountId = '709024702237';
-        const expectedResult = true;
-        const logDirectory = 'logs';
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory, accountId);
+        givenBudgetName = 'SaaS-CPNV';
+        expectedResult = true;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.BUDGET, givenBudgetName);
+        result = await client.exists(AwsCloudClientImpl.BUDGET, givenBudgetName);
 
         // Then
         expect(result).toBe(expectedResult);
@@ -200,29 +262,36 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_NonExistingBudget_True', async () => {
         // Given
-        const givenBudgetName = 'non-existing-budget';
-        const accountId = '709024702237';
-        const expectedResult = false;
-        const logDirectory = 'logs';
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion, logDirectory, accountId);
+        givenBudgetName = 'non-existing-budget';
+        expectedResult = false;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.BUDGET, givenBudgetName);
+        result = await client.exists(AwsCloudClientImpl.BUDGET, givenBudgetName);
 
         // Then
         expect(result).toBe(expectedResult);
     })
+});
+
+describe('AwsCloudClientImpl_exists_Subnet', () => {
+    let givenSubnetName;
+    let awsRegion;
+    let expectedResult;
+    let client;
+    let result;
+
+    beforeAll(async () => {
+        awsRegion = 'eu-west-3';
+        client = await AwsCloudClientImpl.initialize(awsRegion);
+    });
 
     test('exists_ExistingSubnet_True', async () => {
         // Given
-        const givenSubnetName = 'subnet-deliver-01';
-        const expectedResult = true;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenSubnetName = 'subnet-deliver-01';
+        expectedResult = true;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.SUBNET, givenSubnetName);
+        result = await client.exists(AwsCloudClientImpl.SUBNET, givenSubnetName);
 
         // Then
         expect(result).toBe(expectedResult);
@@ -230,27 +299,36 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_NonExistingSubnet_False', async () => {
         // Given
-        const givenSubnetName = 'non-existing-subnet';
-        const expectedResult = false;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenSubnetName = 'non-existing-subnet';
+        expectedResult = false;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.SUBNET, givenSubnetName);
+        result = await client.exists(AwsCloudClientImpl.SUBNET, givenSubnetName);
 
         // Then
         expect(result).toBe(expectedResult);
     });
+});
+
+describe('AwsCloudClientImpl_exists_Gateway', () => {
+    let givenInternetGatewayName;
+    let awsRegion;
+    let expectedResult;
+    let client;
+    let result;
+
+    beforeAll(async () => {
+        awsRegion = 'eu-west-3';
+        client = await AwsCloudClientImpl.initialize(awsRegion);
+    });
 
     test('exists_ExistingInternetGateway_True', async () => {
         // Given
-        const givenInternetGatewayName = 'gty-01';
-        const expectedResult = true;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenInternetGatewayName = 'gty-01';
+        expectedResult = true;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.INTERNET_GATEWAY, givenInternetGatewayName);
+        result = await client.exists(AwsCloudClientImpl.INTERNET_GATEWAY, givenInternetGatewayName);
 
         // Then
         expect(result).toBe(expectedResult);
@@ -258,27 +336,36 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_NonExistingInternetGateway_False', async () => {
         // Given
-        const givenInternetGatewayName = 'non-existing-internet-gateway';
-        const expectedResult = false;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenInternetGatewayName = 'non-existing-internet-gateway';
+        expectedResult = false;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.INTERNET_GATEWAY, givenInternetGatewayName);
+        result = await client.exists(AwsCloudClientImpl.INTERNET_GATEWAY, givenInternetGatewayName);
 
         // Then
         expect(result).toBe(expectedResult);
     });
+});
+
+describe('AwsCloudClientImpl_exists_Snapshot', () => {
+    let givenSnapshotName;
+    let awsRegion;
+    let expectedResult;
+    let client;
+    let result;
+
+    beforeAll(async () => {
+        awsRegion = 'eu-west-3';
+        client = await AwsCloudClientImpl.initialize(awsRegion);
+    });
 
     test('exists_ExistingSnapshot_True', async () => {
         // Given
-        const givenSnapshotName = 'snapshot-core-01';
-        const expectedResult = true;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenSnapshotName = 'snapshot-core-01';
+        expectedResult = true;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.SNAPSHOT, givenSnapshotName);
+        result = await client.exists(AwsCloudClientImpl.SNAPSHOT, givenSnapshotName);
 
         // Then
         expect(result).toBe(expectedResult);
@@ -286,13 +373,11 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_NonExistingSnapshot_True', async () => {
         // Given
-        const givenSnapshotName = 'non-existing-snapshot';
-        const expectedResult = false;
-        const awsRegion = 'eu-west-3';
-        const client = await AwsCloudClientImpl.initialize(awsRegion);
+        givenSnapshotName = 'non-existing-snapshot';
+        expectedResult = false;
 
         // When
-        const result = await client.exists(AwsCloudClientImpl.SNAPSHOT, givenSnapshotName);
+        result = await client.exists(AwsCloudClientImpl.SNAPSHOT, givenSnapshotName);
 
         // Then
         expect(result).toBe(expectedResult);
@@ -331,7 +416,9 @@ describe('AwsCloudClientImpl_readParam', () => {
         givenInstance = null;
 
         // When
-        expect(() => {client.readParam(givenPath, givenInstance);}).toThrow(TypeError);
+        expect(() => {
+            client.readParam(givenPath, givenInstance);
+        }).toThrow(TypeError);
 
         // Then
         // Exception is thrown
