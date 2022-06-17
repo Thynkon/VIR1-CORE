@@ -1,0 +1,71 @@
+{
+    "vpcName": "vpc-vir1",
+    "vpcCidr": "10.0.0.0/16",
+    "igwName": "igwName",
+    "subnets": [
+        {
+            "subnetName": "subnet-public",
+            "subnetCidr": "10.0.0.0/24",
+            "availabilityZone": "a",
+            "routeTables": [
+                {
+                    "routeTableName": "route-table",
+                    "subnetAssociations": [
+                        {
+                            "subnetName": "subnet-name"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "securityGroups": [
+        {
+            "securityGroupName": "securityName",
+            "inboundSecurityRules": [
+                {
+                    "ruleName": "sshfromweb",
+                    "type": "ssh",
+                    "protocole": "tco",
+                    "portRange": "22",
+                    "source": "0.0.0.0/0",
+                    "description": "ssh from web"
+                }
+            ],
+            "outboundSecurityRules": [
+                {
+                    "ruleName": "sshtoweb",
+                    "type": "all traffic",
+                    "protocole": "all",
+                    "portRange": "all",
+                    "destination": "0.0.0.0/0",
+                    "description": "ssh to web"
+                }
+            ]
+        }
+    ],
+    "keyPairs": [
+        {
+            "keyPairsName": "keypair-sshsrv",
+            "type": "rsa"
+        }
+    ],
+    "instances": [
+        {
+            "instanceName": "instance-debian11_sshsrv",
+            "instancePublicIp": "instancePublicIp",
+            "instancePrivateIp": "instancePrivateIp",
+            "instanceType": "instanceType",
+            "plateform": "Debian",
+            "amiId": "amiId",
+            "terminationProtection": "enabled",
+            "usageOperation": "runInstances",
+            "securityGroupsName": [
+                {
+                    "securityGroupName": "securityName"
+                }
+            ],
+            "keyName": ""
+        }
+    ]
+}

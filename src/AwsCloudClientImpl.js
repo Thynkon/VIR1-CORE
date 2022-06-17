@@ -6,6 +6,7 @@ const { Logger } = require('./Logger');
 const { RegionNotFoundException } = require('./exceptions/RegionNotFoundException');
 const REGION_NOT_FOUND = 'UnknownEndpoint';
 const BUDGET_NOT_FONUD = 'NotFoundException';
+const {readFile} = require("./lib/file");
 
 /**
  * Class that connects to the AWS servers, checks if a resource exists and logs all actions.
@@ -77,7 +78,7 @@ class AwsCloudClientImpl extends ICloudClient {
      * @param {string} accountId - The id of the account to fetch budgets from.
      * @exception RegionNotFoundException is thrown if the specified region does not exist.
      */
-    static async initialize(cloudRegion, logPath, accountId) {
+    static async initialize(cloudRegion, logPath = "", accountId= "") {
         const exists = await this.#regionExists(cloudRegion);
 
         if (!exists) {
@@ -432,6 +433,28 @@ class AwsCloudClientImpl extends ICloudClient {
             .catch(handleError);
 
         return result.Snapshots.length !== 0;
+    }
+
+    /**
+     * Convert a json file to an instance
+     * @param path {string} the json file path to parse
+     * @returns {Object} object with injected data from the json file
+     * @see {@link https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Object/assign|link Object.assign}
+     * @exception TypeError is thrown if the target is not a instance of a class.
+     */
+    readParam(path, target) {
+        let filecontent;
+
+        try {
+            filecontent = readFile(path);
+        } catch (err) {
+            console.error(err);
+        }
+
+        let parsedContent = JSON.parse(filecontent);
+        Object.assign(target, parsedContent);
+
+        return target;
     }
 }
 

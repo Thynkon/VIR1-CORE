@@ -3,6 +3,7 @@
 const AWS = require('aws-sdk');
 const { AwsCloudClientImpl } = require('../AwsCloudClientImpl');
 const { Logger } = require('../Logger');
+const { Vpc } = require('./Vpc');
 const { waitForFileToBeWritten, getLastLine } = require('../lib/file');
 const { RegionNotFoundException } = require('../exceptions/RegionNotFoundException');
 
@@ -49,7 +50,7 @@ describe('AwsCloudClientImpl', () => {
         // Given
         const awsRegion = 'eu-west-3';
         const client = await AwsCloudClientImpl.initialize(awsRegion);
-        const connection = new AWS.EC2({ region: awsRegion });
+        const connection = new AWS.EC2({region: awsRegion});
 
         // When
         const client_connection = client.connection
@@ -127,7 +128,7 @@ describe('AwsCloudClientImpl', () => {
 
     test('exists_ExistingImage_True', async () => {
         // Given
-        const givenImageName = 'team-backup-ami-jest-1';
+        const givenImageName = 'ami-core-01';
         const expectedResult = true;
         const awsRegion = 'eu-west-3';
         const client = await AwsCloudClientImpl.initialize(awsRegion);
@@ -295,5 +296,44 @@ describe('AwsCloudClientImpl', () => {
 
         // Then
         expect(result).toBe(expectedResult);
+    });
+});
+
+describe('AwsCloudClientImpl_readParam', () => {
+    let givenInstance;
+    let givenPath;
+    let awsRegion;
+    let expectedResult;
+    let client;
+
+    beforeAll(async () => {
+        awsRegion = 'eu-west-3';
+        givenPath = './src/tests/config.json';
+        client = await AwsCloudClientImpl.initialize(awsRegion);
+    });
+
+    test('readParameter_ExistingInstance_Success', async () => {
+        // Given
+        givenInstance = new Vpc();
+        const expectedName = 'vpc-vir1';
+        expectedResult = true;
+
+        // When
+        const result = await client.readParam(givenPath, givenInstance);
+
+        // Then
+        expect(result.vpcName).toBe(expectedName);
+        expect(result instanceof Vpc).toBe(expectedResult);
+    });
+
+    test('readParameter_NullInstance_TrowException', async () => {
+        // Given
+        givenInstance = null;
+
+        // When
+        expect(() => {client.readParam(givenPath, givenInstance);}).toThrow(TypeError);
+
+        // Then
+        // Exception is thrown
     });
 });
