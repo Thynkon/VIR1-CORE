@@ -1,6 +1,6 @@
 {
   "name": "vir1-core",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A repository that provides AWS,JSON and log files helpers used in VIR1",
   "main": "index.js",
   "scripts": {
