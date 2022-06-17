@@ -61,7 +61,7 @@ class Logger {
     /**
      * Store an info level log
      * @param {string} message - The message to be logged
-     * @param {string} path - The path of the log file
+     * @param {string} [path=logs] - The path of the log file
      */
     static info(message, path = "logs") {
         if (path) {
@@ -73,7 +73,7 @@ class Logger {
     /**
      * Store an error level log
      * @param {string} message - The message to be logged
-     * @param {string} path - The path of the log file
+     * @param {string} [path=logs] - The path of the log file
      */
     static error(message, path = "logs") {
         if (path) {
