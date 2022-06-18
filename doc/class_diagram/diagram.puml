@@ -18,6 +18,7 @@ package "Core"{
         +connection: aws.ec2
         {static} +resouceType: enum
 
+        {static} +initialize(cloudRegion: string, logPath: string, accountId: string): AwsCloudClientImpl
         +regionExists(region: string): boolean
         -vpcExists(name: string): boolean
         -instanceExists(name: string): boolean
