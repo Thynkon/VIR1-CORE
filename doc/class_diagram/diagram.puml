@@ -1,0 +1,50 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+package "Core"{
+
+    'classes and interfaces
+    interface ICloudClient{
+        +constructor(cloudRegion: string, logPath: string)
+        +readParam(path: string, target: object): object
+        +log(message: string, type: enum): void
+        +exists(type: enum, name: string): boolean
+    }
+
+    class AwsCloudClientImpl {
+        -cloudResource: string
+        -accountId: string
+        -logPath: string
+        +connection: aws.ec2
+        {static} +resouceType: enum
+
+        +regionExists(region: string): boolean
+        -vpcExists(name: string): boolean
+        -instanceExists(name: string): boolean
+        -imageExists(name: string): boolean
+        -keypairExists(name: string): boolean
+        -budgetExists(name: string): boolean
+        -subnetExists(name: string): boolean
+        -internetGatewayExists(name: string): boolean
+        -snapshotExists(name: string): boolean
+    }
+
+    class Error
+    class RegionNotFoundException
+
+    class Logger {
+        {static} +messageType: enum
+
+        -setupLogger(path: string): void
+        +info(message: string, path: string): void
+        +error(message: string, path: string): void
+    }
+
+    'relations
+    ICloudClient <|.. AwsCloudClientImpl
+    Logger <.. AwsCloudClientImpl
+    RegionNotFoundException <.. AwsCloudClientImpl: throws
+    RegionNotFoundException <|-- Error
+}
+
+@enduml
