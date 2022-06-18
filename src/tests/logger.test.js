@@ -1,5 +1,6 @@
 const { Logger } = require("../Logger");
-const { waitForFileToBeWritten, getLastLine } = require('../lib/file');
+const { waitForFileToBeWritten, getLastLine, createNotWritableDirectory, deleteDirectory } = require('../lib/file');
+const { FileCreationPermissionDeniedException } = require('../exceptions/FileCreationPermissionDeniedException');
 
 describe('Logger', () => {
     test('info_LogInInfoLogFile_Success', async () => {
@@ -31,15 +32,31 @@ describe('Logger', () => {
         await waitForFileToBeWritten();
         expect(getLastLine(errorLogFile)).toContain(expectedLogLine);
     });
+});
 
-    test('info_LogInInfoLogFile_ThrowException', async () => {
+describe('Logger_NotWritableDirectory', () => {
+    let logDirectory;
+
+    beforeAll(() => {
+        logDirectory = 'notWritableDirectory';
+        createNotWritableDirectory(logDirectory);
+    });
+
+    test('info_LogInInfoLogFile_ThrowException', () => {
         // Given
-        //TODO NGY - Kind of exception throw by the log4js package (file not found, permission)
+        const message = 'Test error message';
 
         // When
-
+        // Reference: https://stackoverflow.com/a/60433457
+        expect(() => Logger.error(message, logDirectory)).toThrow(
+            FileCreationPermissionDeniedException
+        );
 
         // Then
+        // Exception is thrown
+    });
 
+    afterAll(() => {
+        deleteDirectory(logDirectory);
     });
 });
