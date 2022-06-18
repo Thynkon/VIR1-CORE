@@ -1,4 +1,6 @@
 const log4js = require('log4js');
+const { FileCreationPermissionDeniedException } = require('./exceptions/FileCreationPermissionDeniedException');
+const { isDirectoryWritable } = require('./lib/file');
 
 /** Class that stores log messages in files */
 class Logger {
@@ -34,8 +36,36 @@ class Logger {
             this.#setupLogger();
             this.#_logger = log4js.getLogger();
         }
-
         return this.#_logger;
+    }
+
+    /**
+     * Store a log message
+     * @param {string} message - The message to be logged
+     * @param {integer} type - The type of the log message
+     * @param {string} path - The path of the log file
+     * @exception FileCreationPermissionDeniedException is thrown if the log directory is not writable
+     */
+    static #log(message, type, path) {
+        if (path) {
+            if (!isDirectoryWritable(path)) {
+                throw new FileCreationPermissionDeniedException();
+            }
+            this.#setupLogger(path);
+        }
+
+        switch (type) {
+            case this.INFO:
+                this.#logger.info(message);
+                break;
+
+            case this.ERROR:
+                this.#logger.error(message);
+                break;
+
+            default:
+                break
+        }
     }
 
     /**
@@ -44,10 +74,7 @@ class Logger {
      * @param {string} path - The path of the log file
      */
     static info(message, path) {
-        if (path) {
-            this.#setupLogger(path);
-        }
-        this.#logger.info(message);
+        this.#log(message, this.INFO, path);
     }
 
     /**
@@ -56,10 +83,7 @@ class Logger {
      * @param {string} path - The path of the log file
      */
     static error(message, path) {
-        if (path) {
-            this.#setupLogger(path);
-        }
-        this.#logger.error(message);
+        this.#log(message, this.ERROR, path);
     }
 }
 
