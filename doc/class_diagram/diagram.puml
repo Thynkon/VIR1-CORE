@@ -30,22 +30,30 @@ package "Core"{
         -snapshotExists(name: string): boolean
     }
 
-    class Error
-    class RegionNotFoundException
-
     class Logger {
         {static} +messageType: enum
 
-        -setupLogger(path: string): void
-        +info(message: string, path: string): void
-        +error(message: string, path: string): void
+        {static} -setupLogger(path: string): void
+        {static} -log(message: type: enum, string, path: string): void
+        {static} +info(message: string, path: string): void
+        {static} +error(message: string, path: string): void
     }
 
+    class Error
+    class FileException
+    class FileCreationPermissionDeniedException
+    class RegionNotFoundException
+
     'relations
+    Error <|-- RegionNotFoundException
+    Error <|-- FileException
+    FileException <|-- FileCreationPermissionDeniedException
+
+    RegionNotFoundException <.. AwsCloudClientImpl: throws
+    FileCreationPermissionDeniedException <.. Logger: throws
+
     ICloudClient <|.. AwsCloudClientImpl
     Logger <.. AwsCloudClientImpl
-    RegionNotFoundException <.. AwsCloudClientImpl: throws
-    RegionNotFoundException <|-- Error
 }
 
 @enduml
