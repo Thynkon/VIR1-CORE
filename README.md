@@ -60,6 +60,7 @@
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
+        <li><a href="#using-in-your-project">Using in you project</a></li>
       </ul>
     </li>
     <li><a href="#hacking-on-the-project">Hacking on the project</a></li>
@@ -108,6 +109,17 @@ Before you clone this repository, [setup your AWS credentials](https://docs.aws.
     ```sh
     npm install --dev
     ```
+
+### Using in your project
+
+1. Add this package to your **package.json**
+    ```sh
+    npm install vir1-core
+    ```
+
+2. Checkout the unit tests under [src/tests](https://github.com/Thynkon/VIR1-CORE/tree/develop/src/tests) to know how to use the methods provided by this package.
+
+
 ## Hacking on the project
 ### Tests
 If you have added a feature and you want to test if everything is ok, you can run the unit tests we wrote
